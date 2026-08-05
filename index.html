@@ -1015,8 +1015,8 @@ const LEVEL_STEP=500;
 const EQUIPMENT_THRESHOLDS=[70,140,210,280,350,420,490,560,630];
 const PET_THRESHOLDS=[3,6,9,12,15,18,21,24,27];
 const HISTORY_NAMES=['','歴史人物なし','卑弥呼','聖徳太子','源義経','北条時宗','足利義満','織田信長','徳川家康','伊能忠敬','全員集合'];
-const EQUIPMENT_NAMES=['','学ラン','石器','刀','火縄銃','飛行機','戦車','ロケット','タイムマシン','時空ゲート','創生モード'];
-const PET_NAMES=['','成長前（ペットなし）','前方後円墳','ふくらみ','顔出し','埴輪と判明','切り離して歩行','大型化','人と同じ大きさ','超巨大ロボ','金色の小埴輪'];
+const EQUIPMENT_NAMES=['','学ラン','石器','刀','火縄銃','蒸気機関車','飛行機','ロケット','タイムマシン','時空ゲート','創生モード'];
+const PET_NAMES=['','成長前（ペットなし）','前方後円墳','微動','顔出し','じたばた','誕生！','踊る埴輪','武人埴輪','超巨大埴輪','金色の小埴輪'];
 function countReached(value,thresholds){return thresholds.filter(x=>value>=x).length;}
 
 function equipmentStageFromMedals(medals){
@@ -1058,24 +1058,26 @@ function buildGrowthEvents(before,after){
   for(let stage=before.historyStage+1;stage<=after.historyStage;stage++){
     if(stage<2) continue;
     const threshold=historyThreshold(stage);
+    const isFinal=stage===10;
     events.push({
       type:'history',stage,
-      kicker:'新しい歴史人物をゲット！',
+      kicker:isFinal?'🌟 歴史人物が全員集合！ 🌟':'新しい歴史人物をゲット！',
       title:HISTORY_NAMES[stage],
       threshold:`通算挑戦回数が${threshold}回に到達しました！`,
-      message:`新しい歴史人物「${HISTORY_NAMES[stage]}」をゲットしました！`,
+      message:isFinal?'すべての歴史人物が集結しました！':`新しい歴史人物「${HISTORY_NAMES[stage]}」をゲットしました！`,
       image:historyImage(stage)
     });
   }
   for(let stage=before.equipmentStage+1;stage<=after.equipmentStage;stage++){
     if(stage<2) continue;
     const threshold=equipmentThreshold(stage);
+    const isFinal=stage===10;
     events.push({
       type:'equipment',stage,
-      kicker:'テツの装備が変化！',
+      kicker:isFinal?'⚡ てっつーが最終形態へ！ ⚡':'てっつーの装備が変化！',
       title:EQUIPMENT_NAMES[stage],
       threshold:`総メダル数が${threshold}枚に到達しました！`,
-      message:`新しい装備「${EQUIPMENT_NAMES[stage]}」をゲットしました！`,
+      message:isFinal?'最終装備「創生モード」を解放した！':`新しい装備「${EQUIPMENT_NAMES[stage]}」をゲットしました！`,
       image:equipmentImage(stage)
     });
   }
@@ -1084,15 +1086,37 @@ function buildGrowthEvents(before,after){
 }
 function buildPetGrowthEvents(beforeStage,afterStage){
   const events=[];
+  const petKickers={
+    2:'不思議なものが現れた！',
+    3:'ペットに変化が起きた！',
+    4:'ペットに変化が起きた！',
+    5:'ペットに変化が起きた！',
+    6:'ペットが誕生！',
+    7:'ペットが進化！',
+    8:'ペットが進化！',
+    9:'ペットが進化！',
+    10:'✨ ペットが最終進化！ ✨'
+  };
+  const petMessages={
+    2:'前方後円墳が土の中から現れた！',
+    3:'前方後円墳が少し動いている！',
+    4:'前方後円墳から顔が出た！',
+    5:'あと少しで出られるかも！',
+    6:'誕生しました！',
+    7:'踊る埴輪に進化しました！',
+    8:'武人埴輪に進化しました！',
+    9:'超巨大埴輪に進化しました！',
+    10:'金色の小埴輪へ最終進化しました！'
+  };
   for(let stage=beforeStage+1;stage<=afterStage;stage++){
     if(stage<2) continue;
     const threshold=petThreshold(stage);
     events.push({
       type:'pet',stage,
-      kicker:'ペットが成長！',
+      kicker:petKickers[stage],
       title:PET_NAMES[stage],
       threshold:`通算学習日数が${threshold}日になりました！`,
-      message:`ペットが「${PET_NAMES[stage]}」に成長しました！`,
+      message:petMessages[stage],
       image:petImage(stage)
     });
   }
